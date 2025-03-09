@@ -16,7 +16,20 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "https://gangar-concerts-next--gangar-concerts-next-firebase.europe-west4.hosted.app") // Allow Next.js origin
+              .AllowAnyMethod() // GET, POST, etc.
+              .AllowAnyHeader(); // Any headers
+    });
+});
+
+
 var app = builder.Build();
+app.UseCors("AllowLocalhost");
+
 
 // Apply migrations on startup
 using (var scope = app.Services.CreateScope())
