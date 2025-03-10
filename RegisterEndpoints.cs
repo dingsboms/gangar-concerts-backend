@@ -10,7 +10,7 @@ namespace EndpointRegistration
         {
             app.MapGet("/", () =>
             {
-                return "Hello World";
+                return "Version 2";
             });
 
             var concerts_route = app.MapGroup("/concerts");
@@ -54,6 +54,7 @@ namespace EndpointRegistration
 
                 return Results.Ok(concert);
             });
+
             concerts_route.MapDelete("/{id}", async (int id, ConcertsDB db) =>
         {
             var concert = await db.Concerts.FindAsync(id);
