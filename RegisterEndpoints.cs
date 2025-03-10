@@ -36,6 +36,19 @@ namespace EndpointRegistration
                 return Results.Created($"/concerts/{concert.Id}", concert);
             });
 
+            concerts_route.MapPut("/{id}", async (int id, Concert updatedConcert, ConcertsDB db) => {
+                 var concert = await db.Concerts.FindAsync(id);
+            if (concert is null)
+            {
+                return Results.NotFound();
+            }
+            db.Concerts.Remove(concert);
+            db.Concerts.Add(updatedConcert);
+            await db.SaveChangesAsync();
+
+            return Results.Ok(updatedConcert);
+            });
+
             concerts_route.MapDelete("/{id}", async (int id, ConcertsDB db) =>
         {
             var concert = await db.Concerts.FindAsync(id);
