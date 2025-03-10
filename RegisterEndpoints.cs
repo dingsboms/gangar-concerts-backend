@@ -36,19 +36,24 @@ namespace EndpointRegistration
                 return Results.Created($"/concerts/{concert.Id}", concert);
             });
 
-            concerts_route.MapPut("/{id}", async (int id, Concert updatedConcert, ConcertsDB db) => {
-                 var concert = await db.Concerts.FindAsync(id);
-            if (concert is null)
+            concerts_route.MapPut("/{id}", async (int id, Concert updatedConcert, ConcertsDB db) =>
             {
-                return Results.NotFound();
-            }
-            db.Concerts.Remove(concert);
-            db.Concerts.Add(updatedConcert);
-            await db.SaveChangesAsync();
+                var concert = await db.Concerts.FindAsync(id);
+                if (concert is null)
+                {
+                    return Results.NotFound();
+                }
 
-            return Results.Ok(updatedConcert);
+                concert.Title = updatedConcert.Title;
+                concert.Location = updatedConcert.Location;
+                concert.Date = updatedConcert.Date;
+                concert.UpdateLastModified();
+
+                // Since the entity is already tracked by EF, SaveChanges will update it
+                await db.SaveChangesAsync();
+
+                return Results.Ok(concert);
             });
-
             concerts_route.MapDelete("/{id}", async (int id, ConcertsDB db) =>
         {
             var concert = await db.Concerts.FindAsync(id);
